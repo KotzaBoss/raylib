@@ -143,6 +143,8 @@ RLAPI Vector3 GetCameraUp(Camera *camera);
 RLAPI Vector3 GetCameraRight(Camera *camera);
 
 // Camera movement
+RLAPI void SetCameraMoveSpeed(float speed);
+RLAPI float GetCameraMoveSpeed();
 RLAPI void CameraMoveForward(Camera *camera, float distance, bool moveInWorldPlane);
 RLAPI void CameraMoveUp(Camera *camera, float distance);
 RLAPI void CameraMoveRight(Camera *camera, float distance, bool moveInWorldPlane);
@@ -224,6 +226,17 @@ RLAPI Matrix GetCameraProjectionMatrix(Camera* camera, float aspect);
 //----------------------------------------------------------------------------------
 // Module Functions Definition
 //----------------------------------------------------------------------------------
+
+static float cameraMoveSpeed = CAMERA_MOVE_SPEED;
+
+void SetCameraMoveSpeed(float speed) {
+	cameraMoveSpeed = speed;
+}
+
+float GetCameraMoveSpeed() {
+	return cameraMoveSpeed;
+}
+
 // Returns the cameras forward vector (normalized)
 Vector3 GetCameraForward(Camera *camera)
 {
@@ -480,10 +493,10 @@ void UpdateCamera(Camera *camera, int mode)
         }
 
         // Keyboard support
-        if (IsKeyDown(KEY_W)) CameraMoveForward(camera, CAMERA_MOVE_SPEED, moveInWorldPlane);
-        if (IsKeyDown(KEY_A)) CameraMoveRight(camera, -CAMERA_MOVE_SPEED, moveInWorldPlane);
-        if (IsKeyDown(KEY_S)) CameraMoveForward(camera, -CAMERA_MOVE_SPEED, moveInWorldPlane);
-        if (IsKeyDown(KEY_D)) CameraMoveRight(camera, CAMERA_MOVE_SPEED, moveInWorldPlane);
+        if (IsKeyDown(KEY_W)) CameraMoveForward(camera, GetCameraMoveSpeed(), moveInWorldPlane);
+        if (IsKeyDown(KEY_A)) CameraMoveRight(camera, -GetCameraMoveSpeed(), moveInWorldPlane);
+        if (IsKeyDown(KEY_S)) CameraMoveForward(camera, -GetCameraMoveSpeed(), moveInWorldPlane);
+        if (IsKeyDown(KEY_D)) CameraMoveRight(camera, GetCameraMoveSpeed(), moveInWorldPlane);
 
         // Gamepad movement
         if (IsGamepadAvailable(0))
@@ -492,16 +505,16 @@ void UpdateCamera(Camera *camera, int mode)
             CameraYaw(camera, -(GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X) * 2)*CAMERA_MOUSE_MOVE_SENSITIVITY, rotateAroundTarget);
             CameraPitch(camera, -(GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y) * 2)*CAMERA_MOUSE_MOVE_SENSITIVITY, lockView, rotateAroundTarget, rotateUp);
 
-            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) <= -0.25f) CameraMoveForward(camera, CAMERA_MOVE_SPEED, moveInWorldPlane);
-            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) <= -0.25f) CameraMoveRight(camera, -CAMERA_MOVE_SPEED, moveInWorldPlane);
-            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) >= 0.25f) CameraMoveForward(camera, -CAMERA_MOVE_SPEED, moveInWorldPlane);
-            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) >= 0.25f) CameraMoveRight(camera, CAMERA_MOVE_SPEED, moveInWorldPlane);
+            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) <= -0.25f) CameraMoveForward(camera, GetCameraMoveSpeed(), moveInWorldPlane);
+            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) <= -0.25f) CameraMoveRight(camera, -GetCameraMoveSpeed(), moveInWorldPlane);
+            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) >= 0.25f) CameraMoveForward(camera, -GetCameraMoveSpeed(), moveInWorldPlane);
+            if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) >= 0.25f) CameraMoveRight(camera, GetCameraMoveSpeed(), moveInWorldPlane);
         }
 
         if (mode == CAMERA_FREE)
         {
-            if (IsKeyDown(KEY_SPACE)) CameraMoveUp(camera, CAMERA_MOVE_SPEED);
-            if (IsKeyDown(KEY_LEFT_CONTROL)) CameraMoveUp(camera, -CAMERA_MOVE_SPEED);
+            if (IsKeyDown(KEY_SPACE)) CameraMoveUp(camera, GetCameraMoveSpeed());
+            if (IsKeyDown(KEY_LEFT_CONTROL)) CameraMoveUp(camera, -GetCameraMoveSpeed());
         }
     }
 
